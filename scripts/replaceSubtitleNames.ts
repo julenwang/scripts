@@ -9,7 +9,11 @@ const videoSuffixes = ["mkv", "mp4"];
 const subtitleSuffixes = ["ass", "srt"];
 
 function getSuffix(name: string) {
-  return name.split(".").slice(1).join(".");
+  return name
+    .split(".")
+    .slice(1)
+    .filter((s) => s.length < 4)
+    .join(".");
 }
 function getRandomChars() {
   const start = "A".charCodeAt(0);
@@ -53,11 +57,14 @@ async function main() {
   Object.values(subtitleGroups).forEach((group) => {
     const randomChars = getRandomChars();
     group.forEach((old, index) => {
+      const suffix = `.${getSuffix(old)}`;
       rename(
         `${folder}/${old}`,
-        `${folder}/${videos[index].split(".")[0]}_${randomChars}.${getSuffix(
-          old
-        )}`
+        `${folder}/${videos[index]
+          .split(".")
+          .slice(0, -1)
+          .join(".")
+          .replace(suffix, "")}_${randomChars}${suffix}`
       );
     });
   });
